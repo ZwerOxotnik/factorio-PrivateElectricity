@@ -6,8 +6,8 @@ local M = {}
 
 local function protect_from_theft_of_electricity(event)
 	local entity = event.created_entity
-	local disconnect_neighbour = entity.disconnect_neighbour
 	local force = entity.force
+	local disconnect_neighbour = entity.disconnect_neighbour
 	local get_cease_fire = force.get_cease_fire
 	for _, neighbour in pairs(entity.neighbours["copper"]) do
 		local neighbour_force = neighbour.force
@@ -38,6 +38,8 @@ end
 
 M.on_init = set_filters
 M.on_load = set_filters
+M.on_mod_enabled = set_filters
+M.on_mod_disabled = set_filters
 M.add_remote_interface = add_remote_interface
 
 --#endregion
@@ -51,5 +53,6 @@ M.events = {
 		pcall(protect_from_theft_of_electricity, event)
 	end
 }
+M.events_when_off = {}
 
 return M
