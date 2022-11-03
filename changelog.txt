@@ -1,9 +1,21 @@
 ﻿---------------------------------------------------------------------------------------------------
+Version: 1.1.0
+Date: 2022-11-03
+  Features:
+    - Added new setting to block connection to friendly teams
+  Changes:
+    - Slightly optimized
+  Bugfixes:
+    - Perhaps, it didn't work properly before in some cases, so it should work fine now
+  Locale:
+    - Added German translation (thanks to @Xman1109 on crowdin)
+    - Updated Portuguese translation (thanks to @Nesdy on crowdin)
+    - Translations: https://crowdin.com/project/factorio-mods-localization (thank you for contributions, I really appreciate it)
+---------------------------------------------------------------------------------------------------
 Version: 1.0.2
 Date: 2021-11-17
-  Changes:
+  Locale:
     - Added Polish translation (thanks to @Felix_Manning (Felix Manning) on crowdin)
-  Notes:
     - Translations: https://crowdin.com/project/factorio-mods-localization (thank you for contributions, I really appreciate it)
 ---------------------------------------------------------------------------------------------------
 Version: 1.0.1
@@ -17,5 +29,6 @@ Date: 2021-09-11
     - Optimized
   Notes:
     - Release for 1.1
+  Locale:
     - Added Brazilian Portuguese translation (thanks to @BM123499 (Bruno Melo) on crowdin)
     - Translations: https://crowdin.com/project/factorio-mods-localization (thank you for contributions, I really appreciate it)

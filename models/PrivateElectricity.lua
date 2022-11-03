@@ -2,21 +2,62 @@
 local M = {}
 
 
+local allow_ally_connection = settings.global["PE_allow_ally_connection"].value
+
+
 --#region Functions of events
 
 local function protect_from_theft_of_electricity(event)
 	local entity = event.created_entity
 	local force = entity.force
-	local disconnect_neighbour = entity.disconnect_neighbour
-	local get_cease_fire = force.get_cease_fire
-	for _, neighbour in pairs(entity.neighbours["copper"]) do
-		local neighbour_force = neighbour.force
-		if force ~= neighbour_force then
-			if not get_cease_fire(neighbour_force) then
-				disconnect_neighbour(neighbour)
+	local neighbours = entity.neighbours["copper"]
+	if allow_ally_connection then
+		local friendly_relations = {
+			neutral = false,
+			enemy = false
+		}
+		for i=1, #neighbours do
+			local neighbour = neighbours[i]
+			local neighbour_force = neighbour.force
+			if force ~= neighbour_force then
+				local neighbour_force_name = neighbour_force.name
+				local is_friendly = friendly_relations[neighbour_force_name]
+				if is_friendly == false then
+					entity.disconnect_neighbour(neighbour)
+				elseif is_friendly == nil then
+					if force.get_cease_fire(neighbour_force) and
+						neighbour_force.get_cease_fire(force) and
+						force.get_friend(neighbour_force) and
+						neighbour_force.get_friend(force)
+					then
+						friendly_relations[neighbour_force_name] = true
+					else
+						entity.disconnect_neighbour(neighbour)
+						friendly_relations[neighbour_force_name] = false
+					end
+				end
+			end
+		end
+	else
+		for i=1, #neighbours do
+			local neighbour = neighbours[i]
+			if force ~= neighbour.force then
+				entity.disconnect_neighbour(neighbour)
 			end
 		end
 	end
+end
+
+local MOD_SETTINGS = {
+	["PE_allow_ally_connection"] = function(value)
+		allow_ally_connection = value
+	end,
+}
+local function on_runtime_mod_setting_changed(event)
+	if event.setting_type ~= "runtime-global" then return end
+
+	local f = MOD_SETTINGS[event.setting]
+	if f then f(settings.global[event.setting].value) end
 end
 
 --#endregion
@@ -51,7 +92,8 @@ M.events = {
 	end,
 	[defines.events.on_built_entity] = function(event)
 		pcall(protect_from_theft_of_electricity, event)
-	end
+	end,
+	[defines.events.on_runtime_mod_setting_changed] = on_runtime_mod_setting_changed
 }
 M.events_when_off = {}
 
