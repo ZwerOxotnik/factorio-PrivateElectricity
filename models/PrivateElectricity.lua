@@ -11,29 +11,26 @@ local function protect_from_theft_of_electricity(event)
 	local entity = event.created_entity
 	local force = entity.force
 	local neighbours = entity.neighbours["copper"]
+	local disconnect_neighbour = entity.disconnect_neighbour
 	if allow_ally_connection then
-		local friendly_relations = {
-			neutral = false,
-			enemy = false
-		}
+		local friendly_relations = {}
 		for i=1, #neighbours do
 			local neighbour = neighbours[i]
 			local neighbour_force = neighbour.force
 			if force ~= neighbour_force then
-				local neighbour_force_name = neighbour_force.name
-				local is_friendly = friendly_relations[neighbour_force_name]
+				local is_friendly = friendly_relations[neighbour_force]
 				if is_friendly == false then
-					entity.disconnect_neighbour(neighbour)
+					disconnect_neighbour(neighbour)
 				elseif is_friendly == nil then
 					if force.get_cease_fire(neighbour_force) and
 						neighbour_force.get_cease_fire(force) and
 						force.get_friend(neighbour_force) and
 						neighbour_force.get_friend(force)
 					then
-						friendly_relations[neighbour_force_name] = true
+						friendly_relations[neighbour_force] = true
 					else
-						entity.disconnect_neighbour(neighbour)
-						friendly_relations[neighbour_force_name] = false
+						disconnect_neighbour(neighbour)
+						friendly_relations[neighbour_force] = false
 					end
 				end
 			end
@@ -42,7 +39,7 @@ local function protect_from_theft_of_electricity(event)
 		for i=1, #neighbours do
 			local neighbour = neighbours[i]
 			if force ~= neighbour.force then
-				entity.disconnect_neighbour(neighbour)
+				disconnect_neighbour(neighbour)
 			end
 		end
 	end
@@ -56,8 +53,10 @@ local MOD_SETTINGS = {
 local function on_runtime_mod_setting_changed(event)
 	if event.setting_type ~= "runtime-global" then return end
 
-	local f = MOD_SETTINGS[event.setting]
-	if f then f(settings.global[event.setting].value) end
+	local setting_name = event.setting
+
+	local f = MOD_SETTINGS[setting_name]
+	if f then f(settings.global[setting_name].value) end
 end
 
 --#endregion
