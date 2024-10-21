@@ -8,19 +8,17 @@ local allow_ally_connection = settings.global["PE_allow_ally_connection"].value
 --#region Functions of events
 
 local function protect_from_theft_of_electricity(event)
-	local entity = event.created_entity
+	local entity = event.entity
 	local force = entity.force
-	local neighbours = entity.neighbours["copper"]
-	local disconnect_neighbour = entity.disconnect_neighbour
+	local neighbours = entity.get_wire_connectors()[defines.wire_connector_id.pole_copper]
 	if allow_ally_connection then
 		local friendly_relations = {}
-		for i=1, #neighbours do
-			local neighbour = neighbours[i]
-			local neighbour_force = neighbour.force
+		for _, connection in pairs(neighbours.real_connections) do
+			local neighbour_force = connection.target.owner.force
 			if force ~= neighbour_force then
 				local is_friendly = friendly_relations[neighbour_force]
 				if is_friendly == false then
-					disconnect_neighbour(neighbour)
+					neighbours.disconnect_all()
 				elseif is_friendly == nil then
 					if force.get_cease_fire(neighbour_force) and
 						neighbour_force.get_cease_fire(force) and
@@ -29,17 +27,16 @@ local function protect_from_theft_of_electricity(event)
 					then
 						friendly_relations[neighbour_force] = true
 					else
-						disconnect_neighbour(neighbour)
+						neighbours.disconnect_all()
 						friendly_relations[neighbour_force] = false
 					end
 				end
 			end
 		end
 	else
-		for i=1, #neighbours do
-			local neighbour = neighbours[i]
-			if force ~= neighbour.force then
-				disconnect_neighbour(neighbour)
+		for _, connection in pairs(neighbours.real_connections) do
+			if force ~= connection.target.owner.force then
+				neighbours.disconnect_all()
 			end
 		end
 	end
@@ -89,9 +86,10 @@ M.events = {
 	[defines.events.on_robot_built_entity] = function(event)
 		pcall(protect_from_theft_of_electricity, event)
 	end,
-	[defines.events.on_built_entity] = function(event)
-		pcall(protect_from_theft_of_electricity, event)
-	end,
+	-- [defines.events.on_built_entity] = function(event)
+	-- 	pcall(protect_from_theft_of_electricity, event)
+	-- end,
+	[defines.events.on_built_entity] = protect_from_theft_of_electricity,
 	[defines.events.on_runtime_mod_setting_changed] = on_runtime_mod_setting_changed
 }
 M.events_when_off = {}
