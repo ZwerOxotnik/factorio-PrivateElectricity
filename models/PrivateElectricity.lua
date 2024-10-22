@@ -86,10 +86,10 @@ M.events = {
 	[defines.events.on_robot_built_entity] = function(event)
 		pcall(protect_from_theft_of_electricity, event)
 	end,
-	-- [defines.events.on_built_entity] = function(event)
-	-- 	pcall(protect_from_theft_of_electricity, event)
-	-- end,
-	[defines.events.on_built_entity] = protect_from_theft_of_electricity,
+	[defines.events.on_built_entity] = function(event)
+		pcall(protect_from_theft_of_electricity, event)
+	end,
+	-- [defines.events.on_built_entity] = protect_from_theft_of_electricity,
 	[defines.events.on_runtime_mod_setting_changed] = on_runtime_mod_setting_changed
 }
 M.events_when_off = {}
