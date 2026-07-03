@@ -1,10 +1,10 @@
 {
 	"name": "PrivateElectricity",
-	"version": "1.2.1",
-	"factorio_version": "2.0",
+	"version": "1.3.0",
+	"factorio_version": "2.1",
 	"title": "Private electricity",
 	"author": "ZwerOxotnik",
-	"contact": "zweroxotnik@gmail.com, Discord:ZwerOxotnik#7117",
+	"contact": "zweroxotnik@gmail.com, Discord:ZwerOxotnik",
 	"homepage": "",
 	"description": "Does not allow enemies to connect to someone else's electricity.",
 	"dependencies": [
